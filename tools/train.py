@@ -21,9 +21,8 @@ class TestModeEvaluator(extensions.Evaluator):
 
     def evaluate(self):
         model = self.get_target('main')
-        model.train = False
-        ret = super(TestModeEvaluator, self).evaluate()
-        model.train = True
+        with chainer.using_config("train", False), chainer.using_config('enable_backprop', False):
+            ret = super(TestModeEvaluator, self).evaluate()
         return ret
 
 
@@ -93,6 +92,10 @@ def main():
         'main/loss', 'main/accuracy',
         'validation/main/loss', 'validation/main/accuracy']))
     trainer.extend(extensions.ProgressBar())
+
+    if extensions.PlotReport.available():
+        trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], 'epoch', file_name='loss.png', trigger=(args.log_freq, 'epoch')))
+        trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], 'epoch', file_name='accuracy.png', trigger=(args.log_freq, 'epoch')))
 
     trainer.run()
 
