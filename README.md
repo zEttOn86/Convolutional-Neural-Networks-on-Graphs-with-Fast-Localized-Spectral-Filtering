@@ -32,6 +32,9 @@ scipy (1.1.0)
 
 Results
 -------
+<img src='reports/loss.png'>
+
+<img src='reports/accuracy.png'>
 
 
 License
